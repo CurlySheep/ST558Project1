@@ -375,30 +375,122 @@ summary {
 </div>
 
 
-<div id="untitled" class="section level1">
-<h1>Untitled</h1>
-<div id="github-documents" class="section level2">
-<h2>GitHub Documents</h2>
-<p>This is an R Markdown format used for publishing markdown documents to GitHub. When you click the <strong>Knit</strong> button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.</p>
+<div id="st558-project-1" class="section level1">
+<h1>ST558 Project 1</h1>
 </div>
-<div id="including-code" class="section level2">
-<h2>Including Code</h2>
-<p>You can include R code in the document as follows:</p>
-<pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
+<div id="github-pages" class="section level1">
+<h1>Github Pages</h1>
+<p><a href="https://curlysheep.github.io/ST558Project1/">Click here!</a></p>
 </div>
-<div id="including-plots" class="section level2">
-<h2>Including Plots</h2>
-<p>You can also embed plots, for example:</p>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
+<div id="packages-required-to-get-the-api" class="section level1">
+<h1>Packages Required to Get the API</h1>
+<pre class="r"><code>library(httr)
+library(jsonlite)
+library(tidyverse)</code></pre>
 </div>
+<div id="create-functions" class="section level1">
+<h1>Create Functions</h1>
+<pre class="r"><code>base_url &lt;- &#39;https://records.nhl.com/site/api&#39;
+username &lt;- &#39;jzhao43@ncsu.edu&#39;
+password &lt;- &#39;OjRlMTZjNDEyNTJjZDViZWU1NmJmODJhY2E1ZTA2YWIx&#39;</code></pre>
+<div id="basic-function-to-get-a-list-from-api" class="section level2">
+<h2>Basic Function to Get a List from API</h2>
+<pre class="r"><code>getlist &lt;- function(uname = username, pa = password, ep){
+  full_url &lt;- paste0(base_url, &#39;/&#39;, ep)
+  temp_get &lt;- GET(full_url, authenticate(username, password, type = &#39;basic&#39;))
+  temp_json &lt;- content(temp_get, &#39;text&#39;)
+  temp_list &lt;- fromJSON(temp_json, flatten = T)
+  return(temp_list)
+}</code></pre>
+</div>
+<div id="function-to-get-franchise" class="section level2">
+<h2>Function to Get Franchise</h2>
+<pre class="r"><code>getid &lt;- function(un = username, pas = password){
+  temp &lt;- getlist(un,pas,ep = &#39;franchise&#39;)
+  dat &lt;- temp[[1]] %&gt;%
+    select(id, firstSeasonId, fullName)
+  return(dat)
+}
+franchise &lt;- getid()
+franchise</code></pre>
+<pre><code>##    id firstSeasonId              fullName
+## 1   1      19171918    Montréal Canadiens
+## 2   2      19171918    Montreal Wanderers
+## 3   3      19171918      St. Louis Eagles
+## 4   4      19191920       Hamilton Tigers
+## 5   5      19171918   Toronto Maple Leafs
+## 6   6      19241925         Boston Bruins
+## 7   7      19241925      Montreal Maroons
+## 8   8      19251926    Brooklyn Americans
+## 9   9      19251926  Philadelphia Quakers
+## 10 10      19261927      New York Rangers
+## 11 11      19261927    Chicago Blackhawks
+## 12 12      19261927     Detroit Red Wings
+## 13 13      19671968      Cleveland Barons
+## 14 14      19671968     Los Angeles Kings
+## 15 15      19671968          Dallas Stars
+## 16 16      19671968   Philadelphia Flyers
+## 17 17      19671968   Pittsburgh Penguins
+## 18 18      19671968       St. Louis Blues
+## 19 19      19701971        Buffalo Sabres
+## 20 20      19701971     Vancouver Canucks
+## 21 21      19721973        Calgary Flames
+## 22 22      19721973    New York Islanders
+## 23 23      19741975     New Jersey Devils
+## 24 24      19741975   Washington Capitals
+## 25 25      19791980       Edmonton Oilers
+## 26 26      19791980   Carolina Hurricanes
+## 27 27      19791980    Colorado Avalanche
+## 28 28      19791980       Arizona Coyotes
+## 29 29      19911992       San Jose Sharks
+## 30 30      19921993       Ottawa Senators
+## 31 31      19921993   Tampa Bay Lightning
+## 32 32      19931994         Anaheim Ducks
+## 33 33      19931994      Florida Panthers
+## 34 34      19981999   Nashville Predators
+## 35 35      19992000         Winnipeg Jets
+## 36 36      20002001 Columbus Blue Jackets
+## 37 37      20002001        Minnesota Wild
+## 38 38      20172018  Vegas Golden Knights
+## 39 39      20212022        Seattle Kraken</code></pre>
+</div>
+<div id="function-to-get-franchise-team-totals" class="section level2">
+<h2>Function to Get Franchise-team-totals</h2>
+<pre class="r"><code>getstat &lt;- function(un = username, pas = password){
+  temp &lt;- getlist(un,pas,ep = &#39;franchise-team-totals&#39;)
+  dat &lt;- temp[[1]] %&gt;%
+  select(!c(id,activeFranchise,gameTypeId,lastSeasonId,teamId, teamName, triCode)) %&gt;%
+  group_by(firstSeasonId) %&gt;%
+  summarise_each(funs(sum(., na.rm = T)))
+  return(dat)
+}
+
+franstat &lt;- getstat()
+franstat</code></pre>
+<pre><code>## # A tibble: 31 x 23
+##    firstSeasonId franchiseId gamesPlayed goalsAgainst goalsFor homeLosses
+##            &lt;int&gt;       &lt;int&gt;       &lt;int&gt;        &lt;int&gt;    &lt;int&gt;      &lt;int&gt;
+##  1      19171918          20        8196        21902    25864       1111
+##  2      19191920          14         265          970      838         49
+##  3      19201921           4         126          475      414         30
+##  4      19241925          26        7973        22528    24616       1230
+##  5      19251926          34         970         2580     1926        213
+##  6      19261927          66       14364        43210    42903       2522
+##  7      19271928          10        7061        21444    21378       1202
+##  8      19301931          33         138          400      274         27
+##  9      19321933          24        6911        20446    21295       1066
+## 10      19341935           3          48          144       86         14
+## # ... with 21 more rows, and 17 more variables: homeOvertimeLosses &lt;int&gt;,
+## #   homeTies &lt;int&gt;, homeWins &lt;int&gt;, losses &lt;int&gt;, overtimeLosses &lt;int&gt;,
+## #   penaltyMinutes &lt;int&gt;, pointPctg &lt;dbl&gt;, points &lt;int&gt;, roadLosses &lt;int&gt;,
+## #   roadOvertimeLosses &lt;int&gt;, roadTies &lt;int&gt;, roadWins &lt;int&gt;,
+## #   shootoutLosses &lt;int&gt;, shootoutWins &lt;int&gt;, shutouts &lt;int&gt;, ties &lt;int&gt;,
+## #   wins &lt;int&gt;</code></pre>
+</div>
+</div>
+<div id="output-to-readme.md" class="section level1">
+<h1>Output to README.md</h1>
+<pre class="r"><code># rmarkdown::render(&#39;temp.md&#39;, output_file = &#39;README.md&#39;)</code></pre>
 </div>
 
 

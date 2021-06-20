@@ -1,35 +1,79 @@
 ---
-title: "Untitled"
-output: github_document
+title: "ST558 Project 1"
+output: 
+  github_document:
+  toc: yes
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = F, message = F)
+rm(list = ls())
 ```
 
-## GitHub Documents
+# Github Pages
 
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+[Click here!](https://curlysheep.github.io/ST558Project1/)
 
-## Including Code
-
-You can include R code in the document as follows:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Packages Required to Get the API
 
 ```{r}
-rmarkdown::render('temp.md', output_file = 'README.md')
+library(httr)
+library(jsonlite)
+library(tidyverse)
+```
+
+# Create Functions
+
+```{r}
+base_url <- 'https://records.nhl.com/site/api'
+username <- 'jzhao43@ncsu.edu'
+password <- 'OjRlMTZjNDEyNTJjZDViZWU1NmJmODJhY2E1ZTA2YWIx'
+```
+
+## Basic Function to Get a List from API
+
+```{r}
+getlist <- function(uname = username, pa = password, ep){
+  full_url <- paste0(base_url, '/', ep)
+  temp_get <- GET(full_url, authenticate(username, password, type = 'basic'))
+  temp_json <- content(temp_get, 'text')
+  temp_list <- fromJSON(temp_json, flatten = T)
+  return(temp_list)
+}
+```
+
+## Function to Get Franchise
+
+```{r}
+getid <- function(un = username, pas = password){
+  temp <- getlist(un,pas,ep = 'franchise')
+  dat <- temp[[1]] %>%
+    select(id, firstSeasonId, fullName)
+  return(dat)
+}
+franchise <- getid()
+franchise
+```
+
+## Function to Get Franchise-team-totals
+
+```{r}
+getstat <- function(un = username, pas = password){
+  temp <- getlist(un,pas,ep = 'franchise-team-totals')
+  dat <- temp[[1]] %>%
+  select(!c(id,activeFranchise,gameTypeId,lastSeasonId,teamId, teamName, triCode)) %>%
+  group_by(firstSeasonId) %>%
+  summarise_each(funs(sum(., na.rm = T)))
+  return(dat)
+}
+
+franstat <- getstat()
+franstat
+```
+
+# Output to README.md
+
+```{r}
+# rmarkdown::render('temp.md', output_file = 'README.md')
 ```
 
