@@ -21,8 +21,16 @@ ST558 Project 1
   - [Basic Exploratory Data Analysis
     (EDA)](#basic-exploratory-data-analysis-eda)
       - [Get all the Data](#get-all-the-data)
-      - [General Idea about All Franchises (Bar
-        plot)](#general-idea-about-all-franchises-bar-plot)
+      - [Franchises overall
+        Performance](#franchises-overall-performance)
+          - [Home Win/Tie/Loss Count (Bar
+            Plot)](#home-wintieloss-count-bar-plot)
+          - [Home/Road Win Rate](#homeroad-win-rate)
+          - [Relationship between Home/Road Win Rate (Scatter
+            Plot)](#relationship-between-homeroad-win-rate-scatter-plot)
+      - [Goalie](#goalie)
+          - [Goalie Losses (Histogram
+            Plot)](#goalie-losses-histogram-plot)
   - [Output to README.md](#output-to-readme.md)
 
 # Packages Required
@@ -32,6 +40,7 @@ library(httr)
 library(jsonlite)
 library(tidyverse)
 library(ggplot2)
+library(knitr)
 ```
 
 # Create Functions for Listed Endpoint
@@ -184,7 +193,9 @@ allGoalie <- allGoalie[-1,]
 allteam <- getteamstat()
 ```
 
-## General Idea about All Franchises (Bar plot)
+## Franchises overall Performance
+
+### Home Win/Tie/Loss Count (Bar Plot)
 
 I would like to have a view about every franchises’ performance at home
 city. A bar plot should be intuitive enough.
@@ -211,7 +222,96 @@ ggplot(data = bar.plot) + geom_bar(aes(x=fullName,y=value,fill=result),stat="ide
 
 From this plot we know that home field advantage does exist. Nearly all
 the franchises (except those only participated in a few games) have won
-more games than they lost.
+more games than they lost. Besides, **Cleveland Barons** has the highest
+win count (as well as the loss count), it is the most active team. From
+the plot it looks like that **Montreal Canadiens** has the highest home
+win rate. So I want to calculate the numeric result.
+
+### Home/Road Win Rate
+
+I decided to calculate the home and road win rate for all the
+franchises. I’ll define the win rate by
+\(Win=\frac{Win}{Win+Tie+Loss}\).
+
+``` r
+# Calculate home/road win rates and rank it
+winrate <- Join %>%
+  group_by(fullName) %>%
+  summarise(Homewin=homeWins/(homeWins+homeTies+homeLosses), Roadwin=roadWins/(roadWins+roadTies+roadLosses)) %>%
+  arrange(desc(Homewin), desc(Roadwin))
+
+# Spin the data.frame
+temp <-data.frame(t(winrate))
+names(temp) <- winrate$fullName
+temp <- temp[-1,]
+for (i in 1:17){
+  temp[,i] <- as.numeric(as.character(temp[,i]))
+}
+
+# Table output
+temp %>%
+  kable(digits = 2, col.names = NA)
+```
+
+|         | Vegas Golden Knights | Montréal Canadiens | Hamilton Tigers | Nashville Predators | Boston Bruins | Columbus Blue Jackets | Anaheim Ducks | San Jose Sharks | Cleveland Barons | New Jersey Devils | Ottawa Senators | Calgary Flames | Buffalo Sabres | New York Rangers | Edmonton Oilers | Winnipeg Jets | Brooklyn Americans |
+| ------- | -------------------: | -----------------: | --------------: | ------------------: | ------------: | --------------------: | ------------: | --------------: | ---------------: | ----------------: | --------------: | -------------: | -------------: | ---------------: | --------------: | ------------: | -----------------: |
+| Homewin |                 0.71 |               0.62 |            0.60 |                0.60 |          0.57 |                  0.57 |          0.57 |            0.56 |             0.55 |              0.54 |            0.54 |           0.53 |           0.52 |             0.52 |            0.50 |          0.44 |               0.40 |
+| Roadwin |                 0.56 |               0.43 |            0.28 |                0.47 |          0.42 |                  0.43 |          0.46 |            0.45 |             0.38 |              0.41 |            0.43 |           0.39 |           0.37 |             0.38 |            0.36 |          0.38 |               0.25 |
+
+**Golden Knights** has the highest home win rate, but from the previous
+bar plot, we can see that **Golden Knights** actually only participated
+a little games. Considering about the number of matches, **Montreal
+Canadiens** performs best at home field.
+
+### Relationship between Home/Road Win Rate (Scatter Plot)
+
+For all franchises, their home win rates is larger than road win rates.
+But are there any other variables can affect home/road win rate? Are the
+difference between home/road win rate only depends on teams? I decided
+to plot a scatter plot to explore.
+
+``` r
+# reshape data
+sc.plot <- winrate %>%
+  gather(key = 'loc', value = 'rate',2:3)
+sc.plot$fullName <- factor(sc.plot$fullName, levels = sc.plot$fullName[1:17],ordered = T)
+
+ggplot(data = sc.plot,aes(x=fullName,y=rate,group=loc)) + geom_point(aes(color=loc)) + geom_smooth(aes(group=loc), method = lm,color='black', formula = y~x) + labs(title = 'Home win vs Road win') + theme_bw() + coord_flip()
+```
+
+![](temp_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+I ranked the Home win rate from high to low first, and then want to
+compare it’s tendency with road win rate’s. Although there’s some
+outliers exist, the linear regression of home/road sets of win rate is
+basically parallel. That’s means home/road competition actually fair
+enough for most of franchises, because their difference between
+home/road sets remain constant.
+
+**Hamilton Tigers** contributes a outlier in this plot, the difference
+between its home/road win rate is much larger than the others. That’s
+because **Hamilton Tigers** only joined in a few matches.
+
+## Goalie
+
+### Goalie Losses (Histogram Plot)
+
+I want to explore if the distribution of all the goalies’ losses fit the
+normal distribution. So here’s the histogram
+plot.
+
+``` r
+ggplot(data = allGoalie,aes(x=losses,y=..density..)) + geom_histogram(bins = 50) + geom_density(size=1.5, color = 'red',adjust=2.5/6)+labs(title = 'Histogram for Goalie Losses') + theme_bw()
+```
+
+![](temp_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+Unfortunately, it has nothing like a normal distribution, but more like
+a reciprocal function or exponential function. It is extremely left
+skewed, that is, most of them only have a few losses while the right
+tail lag a lot. I guess that’s because only a few of goalies can play
+regularly, and they evenly distributed from 100 losses to 300 losses.
+Most of goalies are freshmen or had to sit off the court.
 
 # Output to README.md
 
