@@ -1,5 +1,6 @@
 ---
 title: "ST558 Project 1"
+author: "Jiashu Zhao"
 output: 
   github_document:
    toc: yes
@@ -9,6 +10,10 @@ output:
 knitr::opts_chunk$set(echo = TRUE, warning = F, message = F)
 rm(list = ls())
 ```
+
+# Github Repo
+
+[Click here!](https://github.com/CurlySheep/ST558Project1)
 
 # Packages Required
 
@@ -196,7 +201,7 @@ ggplot(data = bar.plot) + geom_bar(aes(x=fullName,y=value,fill=result),stat="ide
 
 From this plot we know that home field advantage does exist. Nearly all the franchises (except those only participated in a few games) have won more games than they lost. Besides, **Cleveland Barons** has the highest win count (as well as the loss count), it is the most active team. From the plot it looks like that **Montreal Canadiens** has the highest home win rate. So I want to calculate the numeric result.
 
-### Home/Road Win Rate
+### Home/Road Win Rate (Contingency Table)
 
 I decided to calculate the home and road win rate for all the franchises. I'll define the win rate by $Win=\frac{Win}{Win+Tie+Loss}$.
 
@@ -250,6 +255,65 @@ ggplot(data = allGoalie,aes(x=losses,y=..density..)) + geom_histogram(bins = 50)
 ```
 
 Unfortunately, it has nothing like a normal distribution, but more like a reciprocal function or exponential function. It is extremely left skewed, that is, most of them only have a few losses while the right tail lag a lot. I guess that's because only a few of goalies can play regularly, and they evenly distributed from 100 losses to 300 losses. Most of goalies are freshmen or had to sit off the court.
+
+### Numeric Summaries
+
+I want to produce the summary information for some index of goalies. 
+
+```{r}
+sumdat <- allGoalie %>%
+  select(gamesPlayed, losses, ties, wins)
+
+apply(sumdat,2, function(x){summary(x[!is.na(x)])}) %>%
+  kable(caption = 'Summary of Goalies', digits = 1)
+```
+
+Notice that the variance of these basic numeric information is huge. The maximum numbers are nearly 8-10 times the $3^{rd}$ quantiles. As discussed above, I guess that's because some experienced goalies evenly contributed the data from the $3^{rd}$ to max range, and at the same time, large amount of goalies hardly get a chance to play.
+
+### Goalie Performance among Seasons (Box Plot)
+
+```{r}
+temp <- data.frame(rbind(1:15,table(allGoalie$seasons)))
+colnames(temp) <- c(1:11,13:16)
+temp <- temp[-1,]
+rownames(temp) <- c('Goalie Count')
+temp %>%
+  kable(caption = 'Goalie Count by Seasons')
+```
+
+Most of the goalies performs only 4 seasons. I want to explore if their performance increases as the season increases, and I'll use a box plot to determin. Since the number of goalies is low after season 6, I'll only focus on the first 5 seasons.
+
+```{r}
+# reshape the data
+box.plot <- allGoalie %>%
+  select(seasons, wins, ties, losses) %>%
+  filter(seasons < 6) %>%
+  gather(key = 'result', value = 'count', 2:4)
+
+# Give all NA equals to 0
+box.plot[is.na(box.plot)] <- 0
+
+ggplot(data = box.plot) + geom_boxplot(aes(x=factor(seasons), y=count, fill=result)) + theme_bw() + 
+  labs(x='Seasons', y='Count', title = 'Goalie Performance among Seasons')
+```
+
+Here we can see that both the losses/ties/wins count increase as the season increases. It only means that experienced goalies have more opportunity to play, but can't show their win rate. So I decided to use a bar plot to explore the relationship between win rate and seasons.
+
+### Goalie Win Rate among Seasons (Bar Plot)
+
+```{r}
+# Calculate win rate
+winrate <- allGoalie %>%
+  select(seasons, wins,ties,losses) %>%
+  group_by(seasons) %>%
+  summarise(winrate=sum(wins, na.rm = T)/(sum(wins, na.rm = T)+sum(ties, na.rm = T)+sum(losses, na.rm = T)))
+
+ggplot(data = box.plot) + theme_bw() + 
+  labs(x='Seasons', y='Rate', title = 'Goalie win/tie/loss rate among Seasons', fill='Result') + geom_bar(aes(x=seasons, y=count, fill=result),stat="identity",width=0.5,position = 'fill') + 
+  geom_line(data=winrate[1:5,], aes(x=seasons, y=winrate)) + geom_point(data=winrate[1:5,], aes(x=seasons, y=winrate),size=2)
+```
+
+Notice that for season 4, the win rate dropped significantly compared to other seasons. In season 5 the win rate rebounded a bot, but that's maybe because lack of samples (24 goalies for season 4 and 10 for season 5).
 
 # Output to README.md
 

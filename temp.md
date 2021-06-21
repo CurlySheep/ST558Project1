@@ -1,6 +1,8 @@
 ST558 Project 1
 ================
+Jiashu Zhao
 
+  - [Github Repo](#github-repo)
   - [Packages Required](#packages-required)
   - [Create Functions for Listed
     Endpoint](#create-functions-for-listed-endpoint)
@@ -25,13 +27,23 @@ ST558 Project 1
         Performance](#franchises-overall-performance)
           - [Home Win/Tie/Loss Count (Bar
             Plot)](#home-wintieloss-count-bar-plot)
-          - [Home/Road Win Rate](#homeroad-win-rate)
+          - [Home/Road Win Rate (Contingency
+            Table)](#homeroad-win-rate-contingency-table)
           - [Relationship between Home/Road Win Rate (Scatter
             Plot)](#relationship-between-homeroad-win-rate-scatter-plot)
       - [Goalie](#goalie)
           - [Goalie Losses (Histogram
             Plot)](#goalie-losses-histogram-plot)
+          - [Numeric Summaries](#numeric-summaries)
+          - [Goalie Performance among Seasons (Box
+            Plot)](#goalie-performance-among-seasons-box-plot)
+          - [Goalie Win Rate among Seasons (Bar
+            Plot)](#goalie-win-rate-among-seasons-bar-plot)
   - [Output to README.md](#output-to-readme.md)
+
+# Github Repo
+
+[Click here\!](https://github.com/CurlySheep/ST558Project1)
 
 # Packages Required
 
@@ -227,7 +239,7 @@ win count (as well as the loss count), it is the most active team. From
 the plot it looks like that **Montreal Canadiens** has the highest home
 win rate. So I want to calculate the numeric result.
 
-### Home/Road Win Rate
+### Home/Road Win Rate (Contingency Table)
 
 I decided to calculate the home and road win rate for all the
 franchises. I’ll define the win rate by
@@ -312,6 +324,99 @@ skewed, that is, most of them only have a few losses while the right
 tail lag a lot. I guess that’s because only a few of goalies can play
 regularly, and they evenly distributed from 100 losses to 300 losses.
 Most of goalies are freshmen or had to sit off the court.
+
+### Numeric Summaries
+
+I want to produce the summary information for some index of goalies.
+
+``` r
+sumdat <- allGoalie %>%
+  select(gamesPlayed, losses, ties, wins)
+
+apply(sumdat,2, function(x){summary(x[!is.na(x)])}) %>%
+  kable(caption = 'Summary of Goalies', digits = 1)
+```
+
+|         | gamesPlayed | losses |  ties |  wins |
+| ------- | ----------: | -----: | ----: | ----: |
+| Min.    |         1.0 |      0 |   0.0 |   0.0 |
+| 1st Qu. |        10.5 |      4 |   0.0 |   3.0 |
+| Median  |        40.5 |     15 |   4.0 |  15.0 |
+| Mean    |        91.1 |     37 |  10.3 |  37.4 |
+| 3rd Qu. |       100.8 |     43 |  13.0 |  36.0 |
+| Max.    |       887.0 |    310 | 101.0 | 459.0 |
+
+Summary of Goalies
+
+Notice that the variance of these basic numeric information is huge. The
+maximum numbers are nearly 8-10 times the \(3^{rd}\) quantiles. As
+discussed above, I guess that’s because some experienced goalies evenly
+contributed the data from the \(3^{rd}\) to max range, and at the same
+time, large amount of goalies hardly get a chance to play.
+
+### Goalie Performance among Seasons (Box Plot)
+
+``` r
+temp <- data.frame(rbind(1:15,table(allGoalie$seasons)))
+colnames(temp) <- c(1:11,13:16)
+temp <- temp[-1,]
+rownames(temp) <- c('Goalie Count')
+temp %>%
+  kable(caption = 'Goalie Count by Seasons')
+```
+
+|              |   1 |  2 |  3 |  4 |  5 | 6 | 7 | 8 | 9 | 10 | 11 | 13 | 14 | 15 | 16 |
+| ------------ | --: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: | -: |
+| Goalie Count | 103 | 56 | 29 | 24 | 10 | 8 | 5 | 7 | 2 |  2 |  2 |  1 |  2 |  2 |  1 |
+
+Goalie Count by Seasons
+
+Most of the goalies performs only 4 seasons. I want to explore if their
+performance increases as the season increases, and I’ll use a box plot
+to determin. Since the number of goalies is low after season 6, I’ll
+only focus on the first 5 seasons.
+
+``` r
+# reshape the data
+box.plot <- allGoalie %>%
+  select(seasons, wins, ties, losses) %>%
+  filter(seasons < 6) %>%
+  gather(key = 'result', value = 'count', 2:4)
+
+# Give all NA equals to 0
+box.plot[is.na(box.plot)] <- 0
+
+ggplot(data = box.plot) + geom_boxplot(aes(x=factor(seasons), y=count, fill=result)) + theme_bw() + 
+  labs(x='Seasons', y='Count', title = 'Goalie Performance among Seasons')
+```
+
+![](temp_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+Here we can see that both the losses/ties/wins count increase as the
+season increases. It only means that experienced goalies have more
+opportunity to play, but can’t show their win rate. So I decided to use
+a bar plot to explore the relationship between win rate and seasons.
+
+### Goalie Win Rate among Seasons (Bar Plot)
+
+``` r
+# Calculate win rate
+winrate <- allGoalie %>%
+  select(seasons, wins,ties,losses) %>%
+  group_by(seasons) %>%
+  summarise(winrate=sum(wins, na.rm = T)/(sum(wins, na.rm = T)+sum(ties, na.rm = T)+sum(losses, na.rm = T)))
+
+ggplot(data = box.plot) + theme_bw() + 
+  labs(x='Seasons', y='Rate', title = 'Goalie win/tie/loss rate among Seasons', fill='Result') + geom_bar(aes(x=seasons, y=count, fill=result),stat="identity",width=0.5,position = 'fill') + 
+  geom_line(data=winrate[1:5,], aes(x=seasons, y=winrate)) + geom_point(data=winrate[1:5,], aes(x=seasons, y=winrate),size=2)
+```
+
+![](temp_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+Notice that for season 4, the win rate dropped significantly compared to
+other seasons. In season 5 the win rate rebounded a bot, but that’s
+maybe because lack of samples (24 goalies for season 4 and 10 for season
+5).
 
 # Output to README.md
 
